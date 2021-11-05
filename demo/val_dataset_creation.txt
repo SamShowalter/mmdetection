@@ -1,3 +1,12 @@
 Loaded COCO training data with 5000 samples.
 Use load_from_local loader
 Model loaded. Beginning run
+2021:11:05 16:10:41:    0.2% complete
+2021:11:05 16:13:30:    0.4% complete
+2021:11:05 16:16:16:    0.6% complete
+2021:11:05 16:19:04:    0.8% complete
+2021:11:05 16:21:52:    1.0% complete
+/home/showalte/.conda/envs/cvenv/lib/python3.7/site-packages/mmdet/datasets/utils.py:69: UserWarning: "ImageToTensor" pipeline is replaced by "DefaultFormatBundle" for batch inference. It is recommended to manually replace it in the test data pipeline in your config file.
+  'data pipeline in your config file.', UserWarning)
+/home/showalte/.conda/envs/cvenv/lib/python3.7/site-packages/mmdet/core/bbox/coder/delta_xywh_bbox_coder.py:103: UserWarning: DeprecationWarning: onnx_delta2bbox is deprecated in the case of batch decoding and non-ONNX, please use \u201cdelta2bbox\u201d instead. In order to improve the decoding speed, the batch function will no longer be supported. 
+  'DeprecationWarning: onnx_delta2bbox is deprecated '

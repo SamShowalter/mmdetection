@@ -26,7 +26,7 @@ if __name__ in '__main__':
     probs = []
     i = 0
     start = False
-    for p in paths[:10]:
+    for p in paths:
         img_path = "../../Scene_Graph_Novelty/data/coco/images/train2017/{}"\
         .format(p)
         det_bboxes, det_labels, det_probs = inference_detector_with_probs(model, img_path,score_thresh = 0.00)

@@ -55,6 +55,7 @@ if __name__ in '__main__':
     bboxes = np.stack(bboxes)
     labels = np.stack(labels)
     probs = np.stack(probs)
-    torch.save(bboxes, 'ms_coco_test2017_bboxes_top50.pt')
-    torch.save(labels, 'ms_coco_test2017_labels_top50.pt')
-    torch.save(probs, 'ms_coco_test2017_probs_top50.pt')
+
+    torch.save(bboxes, '../../Scene_Graph_Novelty/data/coco/extracted/ms_coco_test2017_bboxes_top50.pt')
+    torch.save(labels, '../../Scene_Graph_Novelty/data/coco/extracted/ms_coco_test2017_labels_top50.pt')
+    torch.save(probs, '../../Scene_Graph_Novelty/data/coco/extracted/ms_coco_test2017_probs_top50.pt')

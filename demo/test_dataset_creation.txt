@@ -1,0 +1,4 @@
+Loaded COCO training data with 40670 samples.
+Use load_from_local loader
+Model loaded. Beginning run
+2021:11:05 16:28:44:    0.025% complete
