@@ -1,4 +1,5 @@
 import os
+import datetime as dt
 import sys
 
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
@@ -23,7 +24,8 @@ if __name__ in '__main__':
     bboxes = []
     labels = []
     probs = []
-    for p in tqdm(paths):
+    i = 0
+    for p in paths:
         img_path = "../../Scene_Graph_Novelty/data/coco/images/train2017/{}"\
         .format(p)
         det_bboxes, det_labels, det_probs = inference_detector_with_probs(model, img_path,score_thresh = 0.00)
@@ -36,6 +38,10 @@ if __name__ in '__main__':
         det_probs = np.append(det_probs,
                               np.expand_dims(det_probs_background, axis = 0).T,
                              axis = 1)
+
+        i += 1
+        if i%1000 == 0:
+            print("{}:    {}% complete".format(dt.datetime.now().strftime("%Y:%m:%d %H:%M:%S"),round(i/len(paths),3)))
         # print(det_probs.sum(axis = 1))
         # print(det_bboxes.shape)
         assert det_bboxes.shape == (50,5), "ERROR"
@@ -44,10 +50,11 @@ if __name__ in '__main__':
         bboxes.append(det_bboxes)
         labels.append(det_labels)
         probs.append(det_probs)
+        sys.stdout.flush()
 
     bboxes = np.stack(bboxes)
     labels = np.stack(labels)
     probs = np.stack(probs)
-    torch.save(bboxes, 'ms_coco_train2017_bboxes_t50.pt')
-    torch.save(labels, 'ms_coco_train2017_labels_t50.pt')
-    torch.save(probs, 'ms_coco_train2017_probs_t50.pt')
+    torch.save(bboxes, 'ms_coco_train2017_bboxes_top50.pt')
+    torch.save(labels, 'ms_coco_train2017_labels_top50.pt')
+    torch.save(probs, 'ms_coco_train2017_probs_top50.pt')
