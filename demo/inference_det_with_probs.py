@@ -149,7 +149,7 @@ def inference_detector_with_probs(model, img, score_thresh = None):
         bbox_pred = bbox_pred.reshape(batch_size, num_proposals_per_img, -1)
 
         scores = F.softmax(cls_logits, dim=-1)
-        bboxes = model.roi_head.bbox_head.bbox_coder.decode(rois[..., :], bbox_pred, max_shape=img_shapes)
+        bboxes = model.roi_head.bbox_head.bbox_coder.decode(rois[..., 1:], bbox_pred, max_shape=img_shapes)
         # B, 1, bboxes.size(-1)
         scale_factor = bboxes.new_tensor(np.array(scale_factors)).unsqueeze(1).repeat(
             1, 1,

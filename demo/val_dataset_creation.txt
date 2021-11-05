@@ -1,0 +1,3 @@
+Loaded COCO training data with 5000 samples.
+Use load_from_local loader
+Model loaded. Beginning run
