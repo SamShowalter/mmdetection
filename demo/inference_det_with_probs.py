@@ -32,6 +32,8 @@ def my_multiclass_nms(multi_bboxes,
             (k), and (k, 80). Labels are 0-based.
     """
     num_classes = multi_scores.size(1) - 1
+    # print(multi_bboxes.shape)
+    # num_classes = multi_scores.size(1) 
     # exclude background category
     if multi_bboxes.shape[1] > 4:
         bboxes = multi_bboxes.view(multi_scores.size(0), -1, 4)
@@ -39,7 +41,13 @@ def my_multiclass_nms(multi_bboxes,
         bboxes = multi_bboxes[:, None].expand(
             multi_scores.size(0), num_classes, 4)
 
+    # Background probability ignored, but why? let's include
+    # scores = multi_scores[:, :-1]
+    # print(bboxes.shape)
+    # final_scores = copy.deepcopy(scores)
     scores = multi_scores[:, :-1]
+    # print(scores.shape)
+    
 
     labels = torch.arange(num_classes, dtype=torch.long)
     labels = labels.view(1, -1).expand_as(scores)
@@ -85,6 +93,8 @@ def inference_detector_with_probs(model, img, score_thresh = None):
     """
 
     cfg = model.cfg
+    
+    cfg.model.test_cfg.rcnn.max_per_img = 50
     device = next(model.parameters()).device  # model device
     cfg.data.test.pipeline = replace_ImageToTensor(cfg.data.test.pipeline)
     test_pipeline = Compose(cfg.data.test.pipeline)
@@ -108,10 +118,10 @@ def inference_detector_with_probs(model, img, score_thresh = None):
     with torch.no_grad():
         x = model.extract_feat(data['img'][0])
         # print(img_metas)
-        print(x[4].shape)
-        print(len(x))
+        # print(x[4].shape)
+        # print(len(x))
         proposal_list = model.rpn_head.simple_test_rpn(x, img_metas)
-        print(proposal_list[0].shape)
+        # print(proposal_list[0].shape)
 
         img_shapes = tuple(meta['img_shape'] for meta in img_metas)
         scale_factors = tuple(meta['scale_factor'] for meta in img_metas)
@@ -129,6 +139,7 @@ def inference_detector_with_probs(model, img, score_thresh = None):
         rois = rois.view(-1, 5)
         bbox_results = model.roi_head._bbox_forward(x, rois)
         cls_logits = bbox_results['cls_score']
+        # print(cls_logits.shape)
         bbox_pred = bbox_results['bbox_pred']
 
         # Recover the batch dimension
@@ -138,7 +149,7 @@ def inference_detector_with_probs(model, img, score_thresh = None):
         bbox_pred = bbox_pred.reshape(batch_size, num_proposals_per_img, -1)
 
         scores = F.softmax(cls_logits, dim=-1)
-        bboxes = model.roi_head.bbox_head.bbox_coder.decode(rois[..., 1:], bbox_pred, max_shape=img_shapes)
+        bboxes = model.roi_head.bbox_head.bbox_coder.decode(rois[..., :], bbox_pred, max_shape=img_shapes)
         # B, 1, bboxes.size(-1)
         scale_factor = bboxes.new_tensor(scale_factors).unsqueeze(1).repeat(
             1, 1,
@@ -151,7 +162,6 @@ def inference_detector_with_probs(model, img, score_thresh = None):
         for (bbox, score) in zip(bboxes, scores):
             if score_thresh is not None:
                 cfg.model.test_cfg.rcnn.score_thr = score_thresh
-            print(cfg.model.test_cfg.rcnn.max_per_img)
             det_bbox, det_label, det_prob = my_multiclass_nms(bbox, score,
                                                               cfg.model.test_cfg.rcnn.score_thr,
                                                               cfg.model.test_cfg.rcnn.nms,
